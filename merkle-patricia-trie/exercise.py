@@ -85,7 +85,7 @@ print("Root node: ", state.root_node)
 
 print("\n")
 print(
-    "- Let’s do it again but with a key equal to the first few nibbles of our original ke"
+    "- Let’s do it again but with a key equal to the first few nibbles of our original key"
 )
 key = utils.to_string("\x01\x01")
 state.update(key, rlp.encode(["hellothere"]))
@@ -93,6 +93,9 @@ state.update(key, rlp.encode(["hellothere"]))
 print("Root hash:", encode(state.root_hash, "hex"))
 print("Root node:", state.root_node)
 print("new Branch node: ", state._decode_to_node(state.root_node[1]))
+print(
+    "- The branch node corresponds to the key ‘\x01\x01’, but there is also a value with that key (‘hellothere’). Hence, that value is placed in the final (17th) position of the branch node. "
+)
 
 
 ## EX2 - D
@@ -105,12 +108,18 @@ print("Root node: ", state.root_node)
 
 print("\n")
 
+print(
+    "- we add a new entry with a key that is identical to the original key, but has an additional two nibbles"
+)
 key = utils.to_string("\x01\x01\x02\x57")
 state.update(key, rlp.encode(["hellothere"]))
 
 print("Root hash:", encode(state.root_hash, "hex"))
 print("Root node:", state.root_node)
 print("Branch node: ", state._decode_to_node(state.root_node[1]))
+print(
+    "- Now the original entry’s value is stored at the final position of the branch node, where the key for the branch node is the key for that value (‘\x01\x01\x02’). The second entry is stored at the position of it’s next nibble (5), with a key equal to the remaining nibbles (just 7)"
+)
 
 
 ## EX3

@@ -32,4 +32,6 @@ It will be your job to implement the Merkle proof functionality and to verify it
 
 # Merkle Patricia Trie and RLP
 
+A trie is used in two key places: to encode transaction lists in a block, and to encode the state of a block. For transactions, the keys are big-endian integers representing the transaction count in the current block. For the state trie, the keys are ethereum addresses. It is essential for any full node to maintain the state trie, as it must be used to verify new transactions (since contract data must be referenced). Unlike bitcoin, however, there is no need to store old transactions for verification purposes, since there is a state database. So technically the transaction tries don’t need to be stored. Of course, if no one keeps them around, then no one will ever be able to verify from the genesis block up to the current state again, so it makes sense to hang on to them.
+
 Repo supporting blog post at http://easythereentropy.wordpress.com/2014/06/04/understanding-the-ethereum-trie/
