@@ -4,7 +4,7 @@
 
 Merkle trees are hash-based data structures used to prove the integrity of transaction data stored in the block. **For this exercise you may assume that all trees are binary, balanced, and that the number of transactions to be stored are some exponent of two.**
 
-![Merkle Tree](merkle-tree/img/merkle_tree.jpeg)
+![Merkle Tree](./img/merkle_tree.jpeg)
 _Source: [Grid+](https://blog.gridplus.io/efficiently-bridging-evm-blockchains-8421504e9ced)_
 
 Above you can see what this tree would look like. The eight transactions in the block (A-H) are lined up in the bottom row. The second row contains four hashes (S(X) = sha3 hash) of the child transactions. The third row contains hashes of the child hashes, and the root contains a hash of the hashes of the hashes of the transactions. Generically, this is how the transaction part of an Ethereum block is laid out and the root here is what we know of as a transaction header (one of the 15 pieces of information that goes into the block header).
@@ -15,7 +15,7 @@ The reason we use Merkle trees to store block data (i.e. transactions) is that v
 
 Suppose we want to prove that transaction C was indeed in the block that formed the header shown above.
 
-![Merkle Proof](merkle-tree/img/merkle_proof.jpeg)
+![Merkle Proof](./img/merkle_proof.jpeg)
 _Source: [Grid+](https://blog.gridplus.io/efficiently-bridging-evm-blockchains-8421504e9ced)_
 
 In addition to the transaction hash C , we also need D, S(A,B), and S(S(E,F),S(G,H)) to form the proof. The verification itself performs the following steps on the proof:
