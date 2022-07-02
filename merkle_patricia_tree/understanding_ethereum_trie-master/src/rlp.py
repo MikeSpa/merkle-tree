@@ -1,4 +1,4 @@
-'''
+"""
 First byte of an encoded item
 
     x: single byte, itself
@@ -29,36 +29,36 @@ First byte of an encoded item
     x: [55, ] long list, x-0xf8 == length of the length
     |
 0xff == 255
-'''
+"""
 
 
 def int_to_big_endian(integer):
-    '''convert a integer to big endian binary string'''
+    """convert a integer to big endian binary string"""
     # 0 is a special case, treated same as ''
     if integer == 0:
-        return ''
-    s = '%x' % integer
+        return ""
+    s = "%x" % integer
     if len(s) & 1:
-        s = '0' + s
-    return s.decode('hex')
+        s = "0" + s
+    return s.decode("hex")
 
 
 def big_endian_to_int(string):
-    '''convert a big endian binary string to integer'''
+    """convert a big endian binary string to integer"""
     # '' is a special case, treated same as 0
-    string = string or '\x00'
-    s = string.encode('hex')
-    return long(s, 16)
+    string = string or "\x00"
+    s = string.encode("hex")
+    return int(s, 16)
 
 
 def __decode(s, pos=0):
-    ''' decode string start at `pos`
+    """decode string start at `pos`
     :param s: string of rlp encoded data
     :param pos: start position of `s` to decode from
     :return:
         o: decoded object
         pos: end position of the obj in the string of rlp encoded data
-    '''
+    """
     assert pos < len(s), "read beyond end of string in __decode"
 
     fchar = ord(s[pos])
@@ -66,11 +66,11 @@ def __decode(s, pos=0):
         return (s[pos], pos + 1)
     elif fchar < 184:
         b = fchar - 128
-        return (s[pos + 1:pos + 1 + b], pos + 1 + b)
+        return (s[pos + 1 : pos + 1 + b], pos + 1 + b)
     elif fchar < 192:
         b = fchar - 183
-        b2 = big_endian_to_int(s[pos + 1:pos + 1 + b])
-        return (s[pos + 1 + b:pos + 1 + b + b2], pos + 1 + b + b2)
+        b2 = big_endian_to_int(s[pos + 1 : pos + 1 + b])
+        return (s[pos + 1 + b : pos + 1 + b + b2], pos + 1 + b + b2)
     elif fchar < 248:
         o = []
         pos += 1
@@ -83,7 +83,7 @@ def __decode(s, pos=0):
         return (o, pos)
     else:
         b = fchar - 247
-        b2 = big_endian_to_int(s[pos + 1:pos + 1 + b])
+        b2 = big_endian_to_int(s[pos + 1 : pos + 1 + b])
         o = []
         pos += 1 + b
         pos_end = pos + b2
@@ -111,14 +111,14 @@ def into(data, pos):
 
 
 def next_item_pos(data, pos):
-    '''get position of next item in the encoded list or string:
+    """get position of next item in the encoded list or string:
 
         if list, then get next item's start position
         if string, then get next charactor's postion
 
     :param data: rlp encoded from list or string
     :pos: current item's position
-    '''
+    """
     fchar = ord(data[pos])
     if fchar < 128:
         return pos + 1
@@ -126,7 +126,7 @@ def next_item_pos(data, pos):
         return pos + 1 + (fchar % 64)
     else:
         b = (fchar % 64) - 55
-        b2 = big_endian_to_int(data[pos + 1:pos + 1 + b])
+        b2 = big_endian_to_int(data[pos + 1 : pos + 1 + b])
         return pos + 1 + b + b2
 
 
@@ -139,7 +139,7 @@ def descend(data, *indices):
             pos = next_item_pos(data, pos)
             if pos >= finish_pos:
                 raise Exception("End of list")
-    return data[pos: finish_pos]
+    return data[pos:finish_pos]
 
 
 def encode_length(L, offset):
@@ -153,7 +153,7 @@ def encode_length(L, offset):
 
 
 def encode(s):
-    if isinstance(s, (str, unicode)):
+    if isinstance(s, (str)):
         s = str(s)
         if len(s) == 1 and ord(s) < 128:
             return s
@@ -166,9 +166,9 @@ def encode(s):
 
 
 def concat(s):
-    '''
+    """
     :param s: a list, each item is a string of a rlp encoded data
-    '''
+    """
     assert isinstance(s, list)
-    output = ''.join(s)
+    output = "".join(s)
     return encode_length(len(output), 192) + output
