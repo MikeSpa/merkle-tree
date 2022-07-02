@@ -6,11 +6,13 @@ class MerkleTree(object):
     Nodes are reconstructed upon every tx addition but the list of tx
     persistent
     """
-    def __init__(self, tx_list, hash_function='sha256'):
+
+    def __init__(self, tx_list, hash_function="sha256"):
         hash_function = hash_function.lower()
         assert tx_list, "No transactions to be hashed"
-        assert hash_function in SECURE_HASH_FUNCTIONS, (
-            "{} is not a valid hash function".format(hash_function))
+        assert (
+            hash_function in SECURE_HASH_FUNCTIONS
+        ), "{} is not a valid hash function".format(hash_function)
         self._hash_function = hash_function
         self._leaves = tx_list
         self._nodes = []
@@ -29,7 +31,7 @@ class MerkleTree(object):
         self._leaves += tx_in
         self._reevaluate()
 
-    def reset_tree(self, hash_function='sha256'):
+    def reset_tree(self, hash_function="sha256"):
         """Clear the tree data"""
         self._hash_function = hash_function
         self._nodes = []
@@ -39,14 +41,20 @@ class MerkleTree(object):
     def _evaluate(self):
         """Used to construct the tree and arrive at the block header"""
         leaves = list(self._leaves)
+        # copy the last tx so the tree is full
         if not is_power_of_two(len(leaves)) or len(leaves) < 2:
             last_tx = leaves[-1]
             while not is_power_of_two(len(leaves)) or len(leaves) < 2:
                 leaves.append(last_tx)
+        # take tx two by two and create their parent node
         for tx in range(0, len(leaves), 2):
-            self._nodes.append(HashLeaf(leaves[tx], leaves[tx+1],
-                self._hash_function))
+            self._nodes.append(
+                HashLeaf(leaves[tx], leaves[tx + 1], self._hash_function)
+            )
+        # the newly created node are in a queue
         nodes = list(self._nodes)
+        # go through the node queue and build up the tree until only two are left
+        # new node are appended at the end of the queue
         while len(nodes) > 2:
             left = nodes.pop(0)
             right = nodes.pop(0)
@@ -54,6 +62,7 @@ class MerkleTree(object):
             nodes.append(node)
         if len(nodes) == 1:
             return nodes[0]
+        # create root
         return HashNode(nodes[0], nodes[1], self._hash_function)
 
     def _reevaluate(self):
@@ -76,8 +85,9 @@ class MerkleTree(object):
         the tree be rebuilt to accomodate this change
         """
         value = value.lower()
-        assert value in SECURE_HASH_FUNCTIONS, (
-            "{} is not a valid hash function".format(value))
+        assert value in SECURE_HASH_FUNCTIONS, "{} is not a valid hash function".format(
+            value
+        )
         self._hash_function = value
 
     @property
