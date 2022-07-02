@@ -47,4 +47,12 @@ def verify_proof(tx, merkle_proof):
     that the correct block header can be retrieved by properly hashing the tx
     along with every other piece of data in the proof in the correct order
     """
-    #### YOUR CODE HERE
+    current_hash = tx
+    while len(merkle_proof):
+        next_hash = merkle_proof.pop()
+        if next_hash.direction == "l":
+            current_hash = concat_and_hash_list([next_hash.tx, current_hash])
+        else:
+            current_hash = concat_and_hash_list([current_hash, next_hash.tx])
+
+    return current_hash
